@@ -1,58 +1,20 @@
 
-GEO_SAMPLES = ["SRR13694213", "SRR13694215"] # ready ones 
-# then do empty ones: 
-# SRR13694203, SRR13694212, SRR13694214
-
-
-# "SRR13694201""SRR13694213","SRR13694212", "SRR13694214", 
-#"SRR13694202", "SRR13694200", "SRR13694205", "SRR13694204", "SRR13694206", \
-#"SRR13694207", "SRR13694208", "SRR13694210", "SRR13694211", "SRR13694209",  \
-#"SRR13694215"
+GEO_SAMPLES = ["SRR13694201", "SRR13694213","SRR13694212", "SRR13694214", 
+"SRR13694202", "SRR13694200", "SRR13694205", "SRR13694204", "SRR13694206", \
+"SRR13694207", "SRR13694208", "SRR13694210", "SRR13694211", "SRR13694209",  \
+"SRR13694215"] 
 
 FILES = ["MS3686b1_JH_L1-ds.13d32cd0631a4142b34e1b79ee52dd98",  "MS3686b3_JH_L1-ds.1a6c2802dd0e4cec93f899c94eb00670", "MS3686b2_JH_L1-ds.eecbf39e34ef48d3a4121ff147d20ec3", "MS3686b4_JH_L1-ds.668ecbf5bc5140ecb738f12a13641c54"]
 
 SAMPLES = ["sample1", "sample2", "sample3", "sample4"]
-## GSM5077288
-# SRR13694203 - done
-# SRR13694202 - done 
-# SRR13694201 - done
-# SRR13694200 - done 
 
-## GSM5077289
-# SRR13694205 - done 
-# SRR13694204 - done 	
-
-## GSM5077290
-# SRR13694206 - done 
-# SRR13694207 - done 	
-
-## GSM5077291
-# SRR13694208 - done 
-# SRR13694210 - done 
-# SRR13694211 - done 
-# SRR13694209 - done 	
-
-## GSM5077292
-# SRR13694213 - just fastq file
-# SRR13694212 - fastqc files and renamed (file size much smaller) 
-
-## GSM5077293
-# SRR13694214 - fastqc files and renamed (file size much smaller)  
-# SRR13694215 - just fastq file  
-
-
-
-# configfile: "config.yaml"
 
 rule all: 
-    input: expand("/scratch/ell2yvj/projects/scRNA-seq/{geo_sample}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz", geo_sample = GEO_SAMPLES), \
+    input: expand("GEO_datasets/{geo_sample}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz", geo_sample = GEO_SAMPLES), \
     expand("/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R1_001_fastqc.html", geo_sample = GEO_SAMPLES)
 
-#input: "{geo_sample | sample}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz"
-#input: expand("/scratch/ell2yvj/projects/scRNA-seq/rawdata/{geo_sample}/{geo_sample}.fastq", sample = SAMPLES)
-
 rule get_fastq: 
-    output: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}.fastq"
+    output: "GEO_datasets/{geo_sample}/{geo_sample}.fastq"
     threads: 1 
     resources: mem_mb = 30000
     shell: """
@@ -62,10 +24,10 @@ rule get_fastq:
     """
 
 rule split_fastq: 
-    input: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}.fastq"
-    output: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_1.fastq.gz", \
-    "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_2.fastq.gz", \
-    "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_3.fastq.gz"
+    input: "GEO_datasets/{geo_sample}/{geo_sample}.fastq"
+    output: "GEO_datasets/{geo_sample}/{geo_sample}_1.fastq.gz", \
+    "GEO_datasets/{geo_sample}/{geo_sample}_2.fastq.gz", \
+    "GEO_datasets/{geo_sample}/{geo_sample}_3.fastq.gz"
     threads: 1
     resources: mem_mb=30000
     shell: """cd /scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{wildcards.geo_sample} ;
@@ -76,12 +38,12 @@ rule split_fastq:
 rule fastqc: 
    threads: 1 
    resources: mem_mb=50000
-   input: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_I1_001.fastq.gz", \
-   "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R1_001.fastq.gz", \
-   "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R2_001.fastq.gz"
-   output: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_I1_001_fastqc.html", \
-   "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R1_001_fastqc.html", \
-   "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R2_001_fastqc.html"
+   input: "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_I1_001.fastq.gz", \
+   "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R1_001.fastq.gz", \
+   "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R2_001.fastq.gz"
+   output: "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_I1_001_fastqc.html", \
+   "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R1_001_fastqc.html", \
+   "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R2_001_fastqc.html"
    shell: """ 
    module load fastqc ; 
    fastqc /scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{wildcards.geo_sample}/*.fastq.gz -o /scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{wildcards.geo_sample}
@@ -92,30 +54,31 @@ rule fastqc:
 # genes.tsv
 # matrix.mtx
 
+## named w/ wrong R1, R2, I1 
 rule change_name_1:
-    input: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_1.fastq.gz" # change to {geo_sample}_1.fastq.gz eventually
-    output: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_I1_001.fastq.gz"
+    input: "GEO_datasets/{geo_sample}/{geo_sample}_1.fastq.gz" # change to {geo_sample}_1.fastq.gz eventually
+    output: "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_I1_001.fastq.gz"
     shell: """
     mv {input} {output}
     """
 rule change_name_2:
-    input: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_2.fastq.gz" # change to {geo_sample}_2.fastq.gz
-    output: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R1_001.fastq.gz"
+    input: "GEO_datasets/{geo_sample}/{geo_sample}_2.fastq.gz" # change to {geo_sample}_2.fastq.gz
+    output: "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R1_001.fastq.gz"
     shell: """
     mv {input} {output}
     """
      #SampleName_S1_L001_R1_001.fastq.gz
 rule change_name_3: 
-    input: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_3.fastq.gz"
-    output: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R2_001.fastq.gz"
+    input: "GEO_datasets/{geo_sample}/{geo_sample}_3.fastq.gz"
+    output: "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R2_001.fastq.gz"
     shell: """
     mv {input} {output}
     """
 
 rule count: 
-    input: "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_I1_001.fastq.gz", \
-    "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R1_001.fastq.gz", \
-    "/scratch/ell2yvj/projects/scRNA-seq/GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R2_001.fastq.gz"
+    input: "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_I1_001.fastq.gz", \
+    "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R1_001.fastq.gz", \
+    "GEO_datasets/{geo_sample}/{geo_sample}_S1_L001_R2_001.fastq.gz"
     output: "/scratch/ell2yvj/projects/scRNA-seq/{geo_sample}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz"
     threads: 1
     resources: mem_mb = 64000
@@ -147,6 +110,7 @@ rule count:
         #     --fastqs=/scratch/ell2yvj/projects/scRNA-seq/rawdata/JH_scRNASeq/FASTQ_Generation_2021-08-31_00_45_57Z-455128675/M088MS3686_01_L001-ds.1e6a2020d0574d35be5ed8852b18b218 \
         #     --transcriptome=/scratch/ell2yvj/projects/scRNA-seq/Mus_musculus.GRCm38.98.premrna.filtered
         # """
+        
 # rule getPlots: 
 #     input: data_dir = "rawdata/GSM3559978/"
 #     output: QC_metrics = "outputs/GSM3559978/QC_metrics.txt", \
